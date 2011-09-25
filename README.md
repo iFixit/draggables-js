@@ -14,7 +14,7 @@ to be library agnostic.
 All properties shown here are required.
 
     var dragdrop = new Draggables({
-       root: Element that is the common ancestor of all the draggable and droppable elements
+       root: any Element that is the common ancestor of all the draggable and droppable elements.
        getDraggable: function(target){
           // target is the element on which an event happened (mousedown, move, up, ...)
           // if target or one of it's ancestors is draggable, return the element that should be
@@ -40,3 +40,8 @@ that is the current drop target respectively (if applicable)
 * **`dragSuccess`**  -- Fired while dragging when the mouse is released on a drop-target
 * **`dragFail`**     -- Fired while dragging when the mouse is released on an non-drop-target
 * **`dragFinish`**   -- Fired after dropFail and dropSuccess, always fires once for every dragStart
+
+== CSS Classes ==
+To make drag and drop styling of UI elements easier, the class `dragOver` is added to the
+element returned from `getDroppable` while the mouse is over it during a drag event.  You can use
+this to highlight that an area is a valid drop-target.
