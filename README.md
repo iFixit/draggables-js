@@ -1,16 +1,17 @@
-= About =
+# About #
 Allows flexible and fast drag/drop functionality.
 Specifically designed to be performant in these situations:
+
 * Many draggables
 * Many droppables
 * Draggables and droppables are not fixed collections and may change at any time
 * Set of allowed droppables may change depending on what's being drug.
 
-== Compatability ==
+## Compatability ##
 Initially designed to use MooTools, but it can easily be adapted to use any other library or likely
 to be library agnostic.
 
-= Usage =
+# Usage #
 All properties shown here are required.
 
     var dragdrop = new Draggables({
@@ -28,12 +29,13 @@ All properties shown here are required.
        }
     );
 
-== Events ==
+## Events ##
 Draggables fires several events that you can listen to.
 All of these events have a single argument `(event)` which is the standard event
 object from the associated mouse or keyboard event. The event argument also has
 `draggable` and `droppable` properties which are set to the element being dragged and the element
 that is the current drop target respectively (if applicable)
+
 * **`dragStart`**    -- Fired as soon as an element is drug more than 10 pixels
 * **`dragInto`**     -- Fired while dragging when the mouse enters into a drop-target
 * **`dragOut`**      -- Fired while dragging when the mouse exits a drop-target
@@ -41,7 +43,7 @@ that is the current drop target respectively (if applicable)
 * **`dragFail`**     -- Fired while dragging when the mouse is released on an non-drop-target
 * **`dragFinish`**   -- Fired after dropFail and dropSuccess, always fires once for every dragStart
 
-== CSS Classes ==
+## CSS Classes ##
 To make drag and drop styling of UI elements easier, the class `dragOver` is added to the
 element returned from `getDroppable` while the mouse is over it during a drag event.  You can use
 this to highlight that an area is a valid drop-target.
