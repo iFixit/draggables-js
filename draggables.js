@@ -8,21 +8,22 @@
  *    root: Element that is the common ancestor of all the draggable and droppable elements
  *    getDraggable: function(target){
  *       // target is the element on which an event happened (mousedown, move, up, ...)
- *       // if target or one of it's ancestors is draggable, return the draggable element
- *       // otherwise, return null and no drag will happen
+ *       // If target or one of it's ancestors is draggable, return the element that should be
+ *       // draggable; otherwise, return null and no drag will happen.
  *    },
  *    getDroppable: function(target, draggable){
  *       // This is called while dragging, draggable is the element being drug.
  *       // target is the element on which an event happened (mousedown, move, up, ...)
- *       // if target or one of it's ancestors is a drop target, return the drop target
- *       // element otherwise, return null and no drag will happen.
+ *       // if target or one of it's ancestors is a drop target, return the element that should
+ *       // act as the drop target; otherwise, return null and no drop event will happen.
  *    }
  * );
  *
- * == Draggables fires several events ==
- * All of these events have a single argument (event) which has the standard Mootools event
- * properties of the associated mouse event. The event argument also has
- * 'draggable' and 'droppable' which are set to the element being dragged and the element
+ * ## Events ##
+ * Draggables fires several events that you can listen to.
+ * All of these events have a single argument `(event)` which is the standard event
+ * object from the associated mouse or keyboard event. The event argument also has
+ * `draggable` and `droppable` properties which are set to the element being dragged and the element
  * that is the current drop target respectively (if applicable)
  *
  * dragStart -- Fired as soon as an element is drug more than 10 pixels
@@ -32,6 +33,10 @@
  * dragFail -- Fired while dragging when the mouse is released on an non-drop-target
  * dragFinish -- Fired after dropFail and dropSuccess, always fires once for every dragStart
  *
+ * ## CSS Classes ##
+ * To make drag and drop styling of UI elements easier, the class `dragOver` is added to the
+ * element returned from `getDroppable` while the mouse is over it during a drag event.  You can use
+ * this to highlight that an area is a valid drop-target.
  */
 var Draggables = new Class({
    Implements: Events,
@@ -48,8 +53,6 @@ var Draggables = new Class({
       mouseDown,
       mouseDownEvent,
       mouseOver,
-      draggableHeight,
-      draggableSpacingAboveCursor = 10,
       snap = 10,
       highlightClass = 'dragOver';
       
@@ -64,7 +67,6 @@ var Draggables = new Class({
             mouseDownEvent = event;
             event.preventDefault();
             attachEvents(true);
-            draggableHeight = mouseDown.getHeight();
          }
       });
 
@@ -78,7 +80,7 @@ var Draggables = new Class({
          if (mouseOver)
             toggleHighlight(mouseOver, false);
 
-         setDroppableDraggable(event);
+         event.droppable = elementUnderMousePosition(event.client);
          var dropper = event.droppable;
 
          stopDragging(dragging && dropper && mouseDown != dropper, event);
@@ -89,6 +91,53 @@ var Draggables = new Class({
             stopDragging();
       });
 
+      /**
+       * Check for and fire our own mouseover / mouseout events because we
+       * constantly move the dragged element under the mouse and those events
+       * don't fire when the mouse doesn't techincally 'leave' the element.
+       */
+      var lastMouseOverElement;
+      function mouseOverCheck(event) {
+         if (!mouseDown || !dragging)
+            return;
+
+         var mouseOverElement = event.droppable;
+
+         if (mouseOverElement != lastMouseOverElement) {
+            if (lastMouseOverElement) {
+               event.droppable = lastMouseOverElement;
+               mouseOutHandler(event);
+            }
+            if (mouseOverElement) {
+               event.droppable = mouseOverElement;
+               mouseOverHandler(event);
+            }
+            lastMouseOverElement = mouseOverElement;
+         }
+      }
+
+      /**
+       * We move the element out of the way, check what's underneath
+       * at the same mouse location and then move it back and simulate our
+       * own mouseout / mouseover events
+       * See Here: http://www.quirksmode.org/dom/w3c_cssom.html#t20
+       */
+      function elementUnderMousePosition(position) {
+         if (!mouseDown)
+            return;
+
+         var originalTop = mouseDown.getStyle('top');
+         mouseDown.setStyle("top", -10000);
+         var mouseOverElement = document.elementFromPoint(position.x,position.y);
+         mouseDown.setStyle('top', originalTop);
+         if (!mouseOverElement)
+            return;
+         if (mouseOverElement.nodeType == 3) { // Opera has weirdness
+            mouseOverElement = mouseOverElement.parentNode;
+         }
+         mouseOverElement = getDroppable(mouseOverElement, mouseDown);
+         return mouseOverElement;
+      }
 
       mouseMoveHandler = function(event){
          setDroppableDraggable(event);
@@ -104,8 +153,11 @@ var Draggables = new Class({
             mouseDown.setStyle('position', 'relative');
             mouseDown.setPosition({
                x:event.page.x - mouseDownEvent.page.x,
-               y:event.page.y - mouseDownEvent.page.y -
-                  (draggableHeight + draggableSpacingAboveCursor)});
+               y:event.page.y - mouseDownEvent.page.y
+            });
+            // fire our own mouseover / mouseout events because we constantly
+            // move the dragged element under the mouse.
+            mouseOverCheck(event);
             event.stopPropagation();
             event.preventDefault();
          }
@@ -159,6 +211,7 @@ var Draggables = new Class({
                self.fireEvent('dragFail', [event]);
 
             self.fireEvent('dragFinish', [event]);
+            mouseDown.setStyle('position', '');
             mouseDown.setPosition({x:0,y:0});
             root.setStyle('cursor', '');
          }
@@ -171,7 +224,13 @@ var Draggables = new Class({
        */
       function setDroppableDraggable(event){
          event.draggable = !dragging && getDraggable(event.target);
-         event.droppable = dragging && getDroppable(event.target, mouseDown);
+         // we use === false here so we don't repeat this check after we
+         // haven't found a match
+         if (dragging && event.droppable !== false) {
+            var mouseOverElement = elementUnderMousePosition(event.client);
+            if (mouseOverElement)
+               event.droppable = getDroppable(mouseOverElement, mouseDown) || false;
+         }
       }
 
       function toggleHighlight(element, on){
@@ -203,4 +262,3 @@ var Draggables = new Class({
       }
    }   
 });
-

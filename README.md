@@ -17,8 +17,9 @@ All properties shown here are required.
     var dragdrop = new Draggables({
        root: any Element that is the common ancestor of all the draggable and droppable elements.
        getDraggable: function(target){
+          // This is called on every mouse event.
           // target is the element on which an event happened (mousedown, move, up, ...)
-          // if target or one of it's ancestors is draggable, return the element that should be
+          // If target or one of it's ancestors is draggable, return the element that should be
           // draggable; otherwise, return null and no drag will happen.
        },
        getDroppable: function(target, draggable){
