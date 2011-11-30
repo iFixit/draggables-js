@@ -145,6 +145,7 @@ var Draggables = new Class({
          if (!dragging && mouseDown && distance(mouseDownEvent.page, event.page) > snap){
             dragging = true;
             event.draggable = mouseDown;
+            mouseDown.addClass('dragging');
             self.fireEvent('dragStart', [event]);
             root.setStyle('cursor', 'move');
          }
@@ -213,6 +214,7 @@ var Draggables = new Class({
             self.fireEvent('dragFinish', [event]);
             mouseDown.setStyle('position', '');
             mouseDown.setPosition({x:0,y:0});
+            mouseDown.removeClass('dragging');
             root.setStyle('cursor', '');
          }
          reset();
