@@ -2,14 +2,17 @@ window.addEvent('domready', function() {
    createDraggableElements(1000);
    setupDraggables();
 
+   // the Magic
    function setupDraggables() {
       var drags = new Draggables({
          root: $('draggables'),
          getDraggable: function(target) {
+            // Put your own logic here
             if (target.get('tag') == 'span') return target;
          },
          getDroppable: function(target, draggable) {
-            if (target != draggable && target.get('tag') == 'span') return target;
+            // Put your own logic here
+            if (target.get('tag') == 'span') return target;
          }
       });
 
