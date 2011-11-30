@@ -1,0 +1,32 @@
+<html>
+   <head>
+      <script src='https://ajax.googleapis.com/ajax/libs/mootools/1.4.1/mootools-yui-compressed.js'></script>
+      <script src='https://raw.github.com/iFixit/draggables-js/master/draggables.js'></script>
+      <script src='example.js'></script>
+      <style>
+         body {
+            font-family: Arial;
+         }
+         #numbers {
+            width:100%;
+            line-height:1.5em;
+            cursor: move;
+         }
+         #numbers > span {
+            background-color: #eee7ff;
+            color:#778899;
+            padding:1px 2px;
+         }
+
+         #numbers > span:hover {
+            background-color:#ddd7f7;
+            color: #555;
+         }
+      </style>
+   </head>
+   <body>
+      <h1>draggables-js</h1>
+      <p>You can't do this with other drag and drop solutions</p>
+      <div id='numbers'></div>
+   </body>
+</html>
