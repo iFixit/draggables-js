@@ -1,5 +1,18 @@
 window.addEvent('domready', function() {
    createDraggableElements(1000);
+   setupDraggables();
+
+   function setupDraggables() {
+      var drags = new Draggables({
+         root: $('numbers'),
+         getDraggable: function(target) {
+            if (target.get('tag') == 'span') return target;
+         },
+         getDroppable: function(target, draggable) {
+            if (target != draggable && target.get('tag') == 'span') return target;
+         }
+      });
+   }
 
    function createDraggableElements(count) {
       var numbers = $('numbers');
