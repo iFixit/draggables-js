@@ -4,7 +4,7 @@ window.addEvent('domready', function() {
 
    function setupDraggables() {
       var drags = new Draggables({
-         root: $('numbers'),
+         root: $('draggables'),
          getDraggable: function(target) {
             if (target.get('tag') == 'span') return target;
          },
@@ -12,24 +12,39 @@ window.addEvent('domready', function() {
             if (target != draggable && target.get('tag') == 'span') return target;
          }
       });
+
+      drags.addEvent('dragSuccess', function(event) {
+         event.droppable.appendText(event.draggable.get('text'));
+         event.draggable.dispose();
+      });
    }
 
    function createDraggableElements(count) {
-      var numbers = $('numbers');
+      var shapes = {
+         square   : '■',
+         triangle : '◆',
+         circle   : '●'
+      },
+      shapeNames = ['square', 'triangle', 'circle'];
+
+      var container = $('draggables');
       for(var i=1; i<count; i++) {
-         numbers.grab(numberBox(i));
-         numbers.appendText(' ');
+         container.grab(createShape(randomShape()));
+         container.appendText(' ');
       }
 
-      function numberBox(n) {
-         var classes = [];
-         classes.push(n % 2 == 0 ? 'even' : 'odd');
-         if (n % 10 == 0) classes.push('ten');
+      function randomShape() {
+         return shapeNames[Math.floor(Math.random() * 3)];
+      }
 
-         return new Element('span', {
+      function createShape(shape) {
+         var classes = [shape];
+
+         var element = new Element('span', {
             'class': classes.join(' '),
-            'text': n
+            'text': shapes[shape]
          });
+         return element;
       }
    }
 });

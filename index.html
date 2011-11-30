@@ -2,31 +2,48 @@
    <head>
       <script src='https://ajax.googleapis.com/ajax/libs/mootools/1.4.1/mootools-yui-compressed.js'></script>
       <script src='https://raw.github.com/iFixit/draggables-js/master/draggables.js'></script>
-      <script src='example.js'></script>
+      <script src='example.js' charset="utf-8"></script>
       <style>
          body {
             font-family: Arial;
          }
-         #numbers {
+         #draggables {
             width:100%;
-            line-height:1.5em;
-            cursor: move;
+            font-size:25px;
+            line-height:44px;
+            cursor:move;
          }
-         #numbers > span {
+         #draggables > span {
+            border:1px solid #ddd;
             background-color: #eee7ff;
             color:#778899;
-            padding:1px 2px;
+            text-align:center;
+            min-width:2em;
+            padding:1px 9px 4px 9px;
          }
 
-         #numbers > span:hover {
+         #draggables > span:hover {
             background-color:#ddd7f7;
             color: #555;
+         }
+
+         #draggables > span.dragOver {
+            background-color:#ddffd7;
+         }
+
+         #draggables > span.dragging {
+            opacity: 0.3;
          }
       </style>
    </head>
    <body>
       <h1>draggables-js</h1>
-      <p>You can't do this with other drag and drop solutions</p>
-      <div id='numbers'></div>
+      <p>
+         1000 elements that can be drug and dropped on eachother.  Only 1 event
+         event handler for each type (yay event bubbling). This takes little to no
+         memory, elements can be added / removed at runtime and the logic of what
+         operations are allowed is entirely up to you.
+      </p>
+      <div id='draggables'></div>
    </body>
 </html>
