@@ -56,8 +56,7 @@ var Draggables = new Class({
       snap = 10,
       highlightClass = 'dragOver';
       
-      root
-      .addEvent('mousedown', function(event){
+      root.addEvent('mousedown', function(event){
          if(event.rightClick) return;
 
          setDroppableDraggable(event);
@@ -73,7 +72,8 @@ var Draggables = new Class({
 
       // Listen for the mouseup and key events on the document so we can catch and deal with
       // dropping and key presses outside the container
-      $(document).addEvent('mouseup', function(event){
+      var doc = $(document);
+      doc.addEvent('mouseup', function(event){
          if (event.rightClick)
             return;
 
@@ -86,7 +86,7 @@ var Draggables = new Class({
          stopDragging(dragging && dropper && mouseDown != dropper, event);
       })
 
-      .addEvent('keyup', function(event){
+      doc.addEvent('keyup', function(event){
          if(dragging && event.key == 'esc')
             stopDragging();
       });
@@ -124,14 +124,14 @@ var Draggables = new Class({
        */
       function elementUnderMousePosition(position) {
          if (!mouseDown)
-            return;
+            return null;
 
          var originalTop = mouseDown.getStyle('top');
          mouseDown.setStyle("top", -10000);
          var mouseOverElement = document.elementFromPoint(position.x,position.y);
          mouseDown.setStyle('top', originalTop);
          if (!mouseOverElement)
-            return;
+            return null;
          if (mouseOverElement.nodeType == 3) { // Opera has weirdness
             mouseOverElement = mouseOverElement.parentNode;
          }
@@ -176,7 +176,7 @@ var Draggables = new Class({
             toggleHighlight(dropper, true);
 
             event.draggable = mouseDown;
-            self.fireEvent('dragInto', [event])
+            self.fireEvent('dragInto', [event]);
          }
       };
       
@@ -194,7 +194,7 @@ var Draggables = new Class({
             mouseOver = dropper;
 
             event.draggable = mouseDown;
-            self.fireEvent('dragOut', [event])
+            self.fireEvent('dragOut', [event]);
          }
       };
 
@@ -259,7 +259,7 @@ var Draggables = new Class({
          root[(attach ? 'add' : 'remove') + 'Events']({
             'mousemove': mouseMoveHandler,
             'mouseover': mouseOverHandler,
-            'mouseout' : mouseOutHandler,
+            'mouseout' : mouseOutHandler
          });
       }
    }   
