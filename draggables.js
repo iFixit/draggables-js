@@ -53,6 +53,7 @@ var Draggables = new Class({
       mouseDown,
       mouseDownEvent,
       mouseOver,
+      disableClick,
       snap = 10,
       highlightClass = 'dragOver';
       
@@ -84,7 +85,14 @@ var Draggables = new Class({
          var dropper = event.droppable;
 
          stopDragging(dragging && dropper && mouseDown != dropper, event);
-      })
+         event.stop();
+      });
+
+      // Temporarily disable click event after dragging
+      doc.addEvent('click', function(event){
+         if (disableClick)
+            event.stop();
+      });
 
       doc.addEvent('keyup', function(event){
          if(dragging && event.key == 'esc')
@@ -216,6 +224,14 @@ var Draggables = new Class({
             mouseDown.setPosition({x:0,y:0});
             mouseDown.removeClass('dragging');
             root.setStyle('cursor', '');
+            if(event && event.stop)
+               event.stop();
+            // Temporarily disable all click events... as the event.stop() on
+            // a mouseup event doesn't stop the following click event.
+            disableClick = true;
+            setTimeout(function() {
+               disableClick = false;
+            }, 500);
          }
          reset();
       }
